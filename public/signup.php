@@ -1,20 +1,8 @@
-<?php session_start(); ?>
-<!DOCTYPE html>
-<html lang="">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-</head>
-
-<body>
+<?php require_once("../includes/db_connect.php"); ?>
+<?php require_once("../includes/functions.php");?>
+<?php include("layout/header.php"); ?>
 
 <?php
-    $db = new PDO("mysql:host=localhost;dbname=blog;", "root", "");
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 		
-    $db->exec("SET NAMES 'utf8'");
-
-    $_SESSION['msg'] = null;
     $userErr = $emailErr = $passErr = $rePassErr = "";
     if(isset ($_POST['spara'])) {
         $class = $_POST['userRight'];
@@ -62,7 +50,7 @@
         if($users) {
             $userErr = "Username is taken. Please choose another username";
         }
-        if(empty($userErr) && empty($emailErr) && empty($passErr) && empty(rePassErr)) {
+        if(empty($userErr) && empty($emailErr) && empty($passErr) && empty($rePassErr)) {
             
             $pass = password_hash($pass, PASSWORD_BCRYPT);
             
@@ -132,7 +120,8 @@
         <td><input type="submit" name="spara" value="signup"></td>
         </tr>
     </form>
-</table>
-   
-</body>
-</html>
+</table>  
+
+<?php 
+    include("layout/footer.php"); 
+?>

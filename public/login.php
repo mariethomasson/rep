@@ -1,53 +1,17 @@
-<?php session_start(); ?>
-<!DOCTYPE html>
-<html lang="">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
-</head>
+<?php require_once("../includes/db_connect.php"); ?>
+<?php require_once("../includes/functions.php");?>
+<?php include("layout/header.php"); ?>
 
-<body>
 <?php
-    $db = new PDO("mysql:host=localhost;dbname=blog;", "root", "");
-    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 		
-    $db->exec("SET NAMES 'utf8'");
-
-    $_SESSION['msg'] = null;
     if(isset ($_POST['spara'])) {
     
         $user = trim($_POST['username']);
         $pass = trim($_POST['pass']);
-
-        try{
-            $query = "SELECT * FROM users WHERE username = :user";
-            $ps = $db->prepare($query);
-            
-            $result = $ps->execute([
-                'user' => $user
-            ]);
-            
-        }catch(Exception $err) {
-            $_SESSION['msg'] = $err;
-        }
-
-        $users = $ps->fetch(PDO::FETCH_ASSOC); //hämtar en rad
-        //$users $ps->fetchAll; //hämtar flera rader
         
-        if($users) {
-            if(password_verify($pass, $users['hashed_password'] )) {
-                $_SESSION['msg'] = "Logged in";
-            } else {
-                $_SESSION['msg'] = "Failed";
-            }
-        } else {
-            $_SESSION['msg'] = "Failed";
-        }
-    } else
-
-
+        attempt_login($user, $pass);
         
-        
+    }
+
 ?>
 
 <h1>Login</h1>
@@ -68,5 +32,7 @@
         </tr>
     </form>
 </table>
-    </body>
-</html>
+
+<?php 
+    include("layout/footer.php"); 
+?>
