@@ -1,6 +1,20 @@
+<?php session_start(); ?>
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+</head>
+
+<body>
+
 <?php
     $db = new PDO("mysql:host=localhost;dbname=blog;", "root", "");
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 		
+    $db->exec("SET NAMES 'utf8'");
 
+    $_SESSION['msg'] = null;
     $userErr = $emailErr = $passErr = $rePassErr = "";
     if(isset ($_POST['spara'])) {
         $class = $_POST['userRight'];
@@ -10,7 +24,7 @@
         $rePAss = trim($_POST['rePass']);
         
         
-        if(!preg_match("/^[a-zA-Z ]*$/",$user)) {
+        if(!preg_match("/^[a-zA-Z0-9åäöÅÄÖ ]*$/",$user)) {
             $userErr = "Only letters and white space allowed";
         }
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -39,7 +53,7 @@
             
             
         }catch(Exception $err) {
-            echo $err;
+            $_SESSION['msg'] = $err;
         }
 
         $users = $ps->fetch(PDO::FETCH_ASSOC); //hämtar en rad
@@ -48,7 +62,7 @@
         if($users) {
             $userErr = "Username is taken. Please choose another username";
         }
-        if(empty($userErr) && empty($emailErr) && empty($passErr)) {
+        if(empty($userErr) && empty($emailErr) && empty($passErr) && empty(rePassErr)) {
             
             $pass = password_hash($pass, PASSWORD_BCRYPT);
             
@@ -67,13 +81,13 @@
             
             
             }catch(Exception $err) {
-                echo $err;
+                $_SESSION['msg'] = $err;
             }
             
             if($result) {
-                echo "Success";
+                $_SESSION['msg'] = "Success";
             }else {
-                echo "Failed";
+                $_SESSION['msg'] = "Failed";
             }
             
         }
@@ -86,6 +100,7 @@
         
 ?>
 <h1>Sign Up!</h1>
+<?php echo $_SESSION['msg']; ?><br />
 <table>
     <form action="signup.php" method="POST">
         <tr>
@@ -118,3 +133,6 @@
         </tr>
     </form>
 </table>
+   
+</body>
+</html>

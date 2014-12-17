@@ -1,6 +1,19 @@
+<?php session_start(); ?>
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title></title>
+</head>
+
+<body>
 <?php
     $db = new PDO("mysql:host=localhost;dbname=blog;", "root", "");
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION); 		
+    $db->exec("SET NAMES 'utf8'");
 
+    $_SESSION['msg'] = null;
     if(isset ($_POST['spara'])) {
     
         $user = trim($_POST['username']);
@@ -15,7 +28,7 @@
             ]);
             
         }catch(Exception $err) {
-            echo $err;
+            $_SESSION['msg'] = $err;
         }
 
         $users = $ps->fetch(PDO::FETCH_ASSOC); //hämtar en rad
@@ -23,12 +36,12 @@
         
         if($users) {
             if(password_verify($pass, $users['hashed_password'] )) {
-                echo "Logged in";
+                $_SESSION['msg'] = "Logged in";
             } else {
-                echo "Failed";
+                $_SESSION['msg'] = "Failed";
             }
         } else {
-            echo "Failed";
+            $_SESSION['msg'] = "Failed";
         }
     } else
 
@@ -38,6 +51,7 @@
 ?>
 
 <h1>Login</h1>
+<?php echo $_SESSION['msg']; ?><br />
 <table>
     <form action="login.php" method="POST">
         
@@ -54,3 +68,5 @@
         </tr>
     </form>
 </table>
+    </body>
+</html>
